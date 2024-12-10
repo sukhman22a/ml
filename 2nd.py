@@ -3,11 +3,13 @@ import matplotlib.pyplot as mpl
 from sklearn import linear_model
 import numpy as np
 df = pd.read_csv("data\homeprice.csv")
-# print(df)
-mpl.plot(df.area,df.price,color = "blue",marker= ".")
-mpl.xlabel("Area")
-mpl.ylabel("price")
-mpl.show()
+reg = linear_model.LinearRegression() 
+
+reg.fit(df[["area"]].values,df.price)
+# .values returns only the data from the DataFrame, not the column names.
+# If you don't use it properly, it may cause a warning."
+print(reg.predict([[3030]]))
+
+
 print("hello")
 
-# it plots x and y axis values . 
