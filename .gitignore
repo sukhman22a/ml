@@ -2,3 +2,4 @@ tempCodeRunnerFile.c
 tempCodeRunnerFile.py
 tempCodeRunnerFile.exe
 __pycache__/
+import pandas as pd.py
