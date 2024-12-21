@@ -1,35 +1,27 @@
-# plot has some problem
-''''it plots lines correctly 
-but there is some problem with points(marker) 
-there is a gap between years where there are no points
-'''
+""" Hiring Analysis(exercise) """
 import pandas as pd
 import matplotlib.pyplot as mpl
+import word2number.w2n as w2n
 from sklearn import linear_model
-import numpy as np
-df = pd.read_csv("data/canada_per_capita_income.csv")
+# import numpy as np
+df = pd.read_csv("data/hiring.csv")
 reg = linear_model.LinearRegression() 
 
-reg.fit(df[["year"]].values,df['per capita income (US$)'].values)
-coeff = reg.coef_
-incpt = reg.intercept_
+
+# The 'experience' column may contain missing values (NaN). 
+# We first replace NaN values with the string "zero" using fillna(). 
+# Then, we apply the word_to_num function (from the w2n library) to convert 
+# the words (e.g., "one", "two", "three") into corresponding numerical values. 
+# If 'experience' is NaN, it will be treated as "zero" and converted to 0.
+df["experience_in_number"] = df["experience"].fillna("zero").apply(w2n.word_to_num)
+df["test_score(out of 10)"] = df["test_score(out of 10)"].fillna(df["test_score(out of 10)"].median())
 
 
-analysed_df = pd.read_csv("analysed/2nd.csv")
-last_year = analysed_df['year'].max()
-till_now = int(input(f"enter the year above {last_year}: "))
+reg.fit(df[["test_score(out of 10)","interview_score(out of 10)","experience_in_number"]].values,df[["salary($)"]].values)
 
-new_prediction = []
-for i in range(last_year,till_now+1):
-    predicted_revenue = reg.predict([[i]])
-    new_record = {"year" : i,"per capita income (US$)" : predicted_revenue}
-    new_prediction.append(new_record)
-
-new = pd.DataFrame(new_prediction)
-df = pd.concat([df,new] , ignore_index=True) 
-mpl.plot(df[['year']],df[["per capita income (US$)"]],marker='.')
-mpl.xlabel("Year")
-mpl.ylabel("Per Capita Income (US$) ")
+# print(reg.predict([[9,6,2]]))
+# "test_score(out of 10)","interview_score(out of 10)","experience_in_number"
+mpl.plot(df["experience_in_number"].values,df["salary($)"].values,"bo")
+mpl.xlabel("Experience")
+mpl.ylabel("Salary($)")
 mpl.show()
-file_path = "C:/Users/LENOVO/Desktop/ml/ml/analysed/2nd.csv"
-df.to_csv(file_path,index=False,na_rep="NaN")
