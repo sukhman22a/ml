@@ -1,32 +1,25 @@
-""" Saving a model """
+# Dummy variables using pandas
+# dummy trap ?
+# Theroy is important for ml
+
 import pandas as pd
-import matplotlib.pyplot as mpl
-import word2number.w2n as w2n
-from sklearn import linear_model
-import joblib
-# import numpy as np
-df = pd.read_csv("data/hiring.csv")
-reg = linear_model.LinearRegression() 
+from sklearn.linear_model import LinearRegression
 
+df = pd.read_csv("data/carprices.csv")
+dummies = pd.get_dummies(df["Car Model"]).astype(int)
+df_updated = pd.concat([df,dummies],axis="columns")
+final = df_updated.drop(["Car Model","Audi A5"], axis="columns")
 
-# The 'experience' column may contain missing values (NaN). 
-# We first replace NaN values with the string "zero" using fillna(). 
-# Then, we apply the word_to_num function (from the w2n library) to convert 
-# the words (e.g., "one", "two", "three") into corresponding numerical values. 
-# If 'experience' is NaN, it will be treated as "zero" and converted to 0.
-df["experience_in_number"] = df["experience"].fillna("zero").apply(w2n.word_to_num)
-df["test_score(out of 10)"] = df["test_score(out of 10)"].fillna(df["test_score(out of 10)"].median())
+x = final.drop(["Sell Price($)"],axis="columns")
+y = final["Sell Price($)"]
 
+model = LinearRegression()
+model.fit(x.values,y.values)
 
-reg.fit(df[["test_score(out of 10)","interview_score(out of 10)","experience_in_number"]].values,df[["salary($)"]].values)
+pre = model.predict([[70000,3,0,0]])
+# mileage , age(yrs), BMW X5(0),mercedez benz c class(0),audi a5(1)
 
-# print(reg.predict([[9,6,2]]))
-# "test_score(out of 10)","interview_score(out of 10)","experience_in_number"
-
-joblib.dump(reg,"model/hiring_model(ml)")
-# to save the model
-
-
-model_hiring  = joblib.load("model/hiring_model(ml)")
-# to load the model
-print(model_hiring.predict([[9,6,2]]))
+print(model.predict([[45000,4,0,1]]))
+print(model.predict([[86000,7,1,0]]))
+print(model.score(x.values,y.values))
+# x.values give the values in numoy array and x alone give dataframe
