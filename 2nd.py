@@ -1,20 +1,24 @@
-'''Support Vector Machine 
-for dividing two datasets
-https://youtu.be/FB5EdxAGxQg?feature=shared'''
-
-
-from sklearn.datasets import load_digits
+"""Cross  model validation """
+from sklearn.datasets import load_iris
+import numpy as np
 from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt 
-import pandas as pd 
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
 from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
 
-digits= load_digits()
-# 'DESCR', 'data', 'feature_names', 'frame', 'images', 'target', 'target_names'
-df  = pd.DataFrame(digits.data, columns=digits.feature_names)
-y = digits.target
-x = df
-model = SVC(C=6,kernel="linear",gamma="scale")
-x_train, x_test, y_train, y_test = train_test_split(x,y,test_size=0.2 ,random_state=1)
-model.fit(x_train,y_train)
-print(model.score(x_test,y_test))
+iris = load_iris()
+# print(dir(iris))
+# ['DESCR', 'data', 'data_module', 'feature_names', 'filename', 'frame', 'target', 'target_names']
+x = iris.data
+y = iris.target
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size=0.2)
+lr = cross_val_score(LogisticRegression(max_iter= 200),x,y)
+print(lr)
+svc = cross_val_score(SVC(),x,y)
+print(svc)
+dt = cross_val_score(DecisionTreeClassifier(criterion="entropy"),x,y)
+print(dt)
+rfc = cross_val_score(RandomForestClassifier(),x,y)
+print(rfc)
