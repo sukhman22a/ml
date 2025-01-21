@@ -1,3 +1,4 @@
+import json
 import pickle as pk
 import pandas as pd
 import numpy as np
@@ -116,6 +117,7 @@ df2 = df1.drop(["location_encoded","society","location"],axis = "columns")
 # availability_days', 'bhk', 'location_reduced', 'society_reduced',
 # price_per_sqft'
 dummies = pd.get_dummies(df2[["area_type","location_reduced","society_reduced"]])
+
 df2 = pd.concat([df2,dummies],axis = "columns")
 x = df2.drop(["price","area_type","location_reduced","society_reduced"],axis="columns")
 y= df2.price
@@ -124,5 +126,25 @@ model = RandomForestRegressor()
 model.fit(x_train,y_train)
 print(model.score(x_test,y_test))
 
-with open("Bengaluru_House_Data.pkl","wb") as fl:
+
+unique_society = df2["society_reduced"].unique().tolist()
+unique_area_type = df2["area_type"].unique().tolist()
+unique_locations = df["location"].unique().tolist()
+
+# Convert to JSON format
+locations_data = {"locations": unique_locations}
+society_data = {"locations": unique_society}
+area_type_data = {"locations": unique_area_type}
+
+# Save to a JSON file
+with open("model/Benguluru_house_data_resources/location.json", "w") as json_file:
+    json.dump(locations_data, json_file, indent=4)
+with open("model/Benguluru_house_data_resources/society.json", "w") as json_file:
+    json.dump(society_data, json_file, indent=4)
+with open("model/Benguluru_house_data_resources/area_type.json", "w") as json_file:
+    json.dump(area_type_data, json_file, indent=4)
+
+
+with open("model/Bengaluru_House_Data.pkl","wb") as fl:
     pk.dump(model,fl)
+
