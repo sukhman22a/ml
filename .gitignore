@@ -5,4 +5,5 @@ tempCodeRunnerFile.exe
 __pycache__/
 import pandas as pd.py
 mongosh-2.3.8-win32-x64
-fastapi(basic)/
+flaskMarket
+fastapi(basic)
